@@ -1,0 +1,80 @@
+---
+title: "Iris Prediction App"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## About The Iris Prediction App
+
+This app uses the iris data set to predict sepal length based on the following inputs:
+
+- Sepal width (number input)
+- Petal length (number input)
+- Petal width (number input)
+- Species (radio button input)
+
+In addition, there is a plot showing the values in the data set (coloured by species) and the predicted value. The Y-axis is *always* sepal length; the X-axis can be changed to sepal width, petal length, or petal width.
+
+Once the **Go!** button is clicked, the predicted value is displayed, and the plot is updated.
+
+## Prediction Model
+
+The prediction model used in the app is quite simple:
+```{r, comment = ''}
+as.formula(lm(Sepal.Length ~ Sepal.Width +
+                Petal.Length + Petal.Width + Species, data = iris))
+```
+
+The default values when the app is first opened are:
+
+- sepal width = 3.5
+- petal length = 1.4
+- petal width = 0.2
+- species = setosa
+
+### You can find the app here (link)
+
+## Default Prediction
+
+The default predicted value for sepal length  when the app is opened is:
+
+```{r, echo = T, comment = ''}
+mod <- lm(Sepal.Length ~ Sepal.Width + 
+            Petal.Length + Petal.Width + 
+            Species, data = iris)
+
+pred <- predict(mod, 
+                newdata = data.frame(
+                  Sepal.Width = 3.5,
+                  Petal.Length = 1.4,
+                  Petal.Width = 0.2,
+                  Species = 'setosa'))
+
+unname(round(pred, 1))
+```
+
+## Default Plot
+
+Based on the default values listed above, as well as the default choice of sepal width being the x axis for the plot, the default plot for the app is shown below.
+
+```{r, warning = F}
+library(ggplot2)
+iris_plot <- ggplot(iris, aes(Sepal.Width, Sepal.Length, color = Species)) +
+  geom_point(size = 2) +
+  geom_point(aes(x = 3.5, y = pred, colour="black", size = 2), show.legend = F) +
+  ylab('Sepal Length') + xlab('Sepal Width') + 
+  scale_colour_manual(breaks=c("black", "setosa", "versicolor", "virginica"),
+                      labels=c("Prediction", "Setosa", "Versicolor", "Virginica"),
+                      values = c('black', '#F8766D', '#00BFC4', '#C77CFF')) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) 
+           
+iris_plot
+```
+
+
+
